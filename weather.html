@@ -8,142 +8,156 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 </head>
+
 <body>
 
  
   <div class="header">
     <h1>GeoWeather</h1>
-    <div class="search">
-    <input type="search"placeholder ="Search city" >
-    <button type="submit"><i class="fa fa-search"></i></button>
-</div>
+    
    </div>
    <div class="nav_bar">
     <a href="weather.html">HOME</a>
-    <a href="forecast.html">10 Days Forecast</a>
-    <a href="airquality.html">Air Quality</a>
-    <a href="humidity.html">Humidity</a>
+    <a href="forecast.html">Forecasts</a>
+    <a href="Search.html">Search By City</a>
     <a href="blog.html">Blog</a>
-<div class="news-section">
-      <h2>📰 Weather News</h2>
-      <ul>
-        <li><strong>Delhi:</strong> Hea twave alert for the next 3 days.</li>
-        <li><strong>Mumbai:</strong> Humidity crosses 80%, rains expected by evening.</li>
-        <li><strong>Kolkata:</strong> Partly cloudy skies predicted this week.</li>
-        <li><strong>Chennai:</strong> Temperature to rise above 40°C by weekend.</li>
-        <li><strong>Bangalore:</strong> Light showers expected tomorrow.</li>
-      </ul>
     </div>
+    <div class="container">
+    <button onclick="getWeatherByLocation()">Use My Location</button>
+    <div id="weather-card"></div>
+  </div>
 
+
+ 
+<script>
+  
+    function getWeatherByLocation() {
+      const apiKey = '7898410cd1a1cb98d5dfdf02c1f06f68';
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+
+            fetch(url)
+              .then(response => {
+                if (!response.ok) throw new Error("Unable to fetch weather data.");
+                return response.json();
+              })
+              
+              .then(data => {
+                const weather = data.weather[0].main.toLowerCase(); // e.g. "clouds", "rain", "clear"
     
-    <div class="card-container">
+   
+    let bgImage = "";
+if (weather.includes("cloud")) {
+        bgImage = "sunny(1).png";
+    } else if (weather.includes("clear")) {
+        bgImage = "sunny cloudy.png";
+    } else if (weather.includes("rain")) {
+        bgImage = "images/rainy.jpg";
+    } else if (weather.includes("snow")) {
+        bgImage = "images/snow.jpg";
+    } else {
+        bgImage = "images/default.jpg";
+    }
+    
 
-      
-      <label class="card1">
-        <input type="checkbox" hidden>
-        <div class="card-inner">
-          <div class="card-front">
-            <div class="city">Delhi</div>
-            <div class="temp">38°C</div>
-            <div class="weather">Sunny</div>
-          </div>
-          <div class="card-back">
-            <h3>Preventive Measures</h3>
-            <ul>
-              <li>Stay hydrated</li>
-              <li>Wear light clothes</li>
-              <li>Avoid going out at noon</li>
-            </ul>
-          </div>
-        </div>
-      </label>
-
-      
-      <label class="card2">
-        <input type="checkbox" hidden>
-        <div class="card-inner">
-          <div class="card-front">
-            <div class="city">Mumbai</div>
-            <div class="temp">33°C</div>
-            <div class="weather">Humid</div>
-          </div>
-          <div class="card-back">
-            <h3>Preventive Measures</h3>
-            <ul>
-              <li>Use an umbrella</li>
-              <li>Drink fluids</li>
-              <li>Stay in cool places</li>
-            </ul>
-          </div>
-        </div>
-      </label>
-
-      
-      <label class="card3">
-        <input type="checkbox" hidden>
-        <div class="card-inner">
-          <div class="card-front">
-            <div class="city">Kolkata</div>
-            <div class="temp">35°C</div>
-            <div class="weather">Partly Cloudy</div>
-          </div>
-          <div class="card-back">
-            <h3>Preventive Measures</h3>
-            <ul>
-              <li>Wear sunglasses</li>
-              <li>Drink coconut water</li>
-              <li>Stay indoors</li>
-            </ul>
-          </div>
-        </div>
-      </label>
-
-
-      <label class="card4">
-        <input type="checkbox" hidden>
-        <div class="card-inner">
-          <div class="card-front">
-            <div class="city">Chennai</div>
-            <div class="temp">37°C</div>
-            <div class="weather">Hot</div>
-          </div>
-          <div class="card-back">
-            <h3>Preventive Measures</h3>
-            <ul>
-              <li>Light cotton wear</li>
-              <li>Limit outdoor work</li>
-              <li>Eat fruits</li>
-            </ul>
-          </div>
-        </div>
-      </label>
-
-      
-      <label class="card5">
-        <input type="checkbox" hidden>
-        <div class="card-inner">
-          <div class="card-front">
-            <div class="city">Bangalore</div>
-            <div class="temp">28°C</div>
-            <div class="weather">Cloudy</div>
-            
-          </div>
-          <div class="card-back">
-            <h3>Preventive Measures</h3>
-            <ul>
-              <li>Carry a light jacket</li>
-              <li>Avoid late evenings</li>
-              <li>Check weather alerts</li>
-            </ul>
-          </div>
-        </div>
-      </label>
-
-    </div>
+    document.body.style.backgroundImage = `url('${bgImage}')`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundRepeat = "no-repeat";
+    document.body.style.backgroundPosition = "center center";
+                const weatherCard = `
+                  <div class="city">${data.name}</div>
+                  <div class="temp">${Math.round(data.main.temp)}°C</div>
+                  <div class="description">${data.weather[0].main}</div>
+                  <div class="details">
+    <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
+    <p><strong>Wind Speed:</strong> ${data.wind.speed} m/s</p>
+    <p><strong>Pressure:</strong> ${data.main.pressure} hPa</p>
   </div>
+`;
+                
+                document.getElementById('weather-card').innerHTML = weatherCard;
+                document.getElementById("weather-card").classList.add("animate");
+                
+                
 
-</body>
-</html>
-  </div>
+              })
+              .catch(error => {
+                document.getElementById('weather-card').innerHTML = `<p style="color:red;">${error.message}</p>`;
+              });
+          },
+          (error) => {
+            document.getElementById('weather-card').innerHTML = `<p style="color:red;">Location access denied.</p>`;
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+    function getWeatherByCity() {
+    const city = document.getElementById("cityInput").value.trim();
+    const apiKey = '7898410cd1a1cb98d5dfdf02c1f06f68';
+
+    if (!city) {
+      alert("Please enter a city name.");
+      return;
+    }
+
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+    fetch(url)
+      .then(response => {
+        if (!response.ok) throw new Error("City not found.");
+        return response.json();
+      })
+      .then(data => {
+        const weather = data.weather[0].main.toLowerCase();
+
+        let bgImage = "";
+        if (weather.includes("cloud")) {
+          bgImage = "sunny(1).png";
+        } else if (weather.includes("clear")) {
+          bgImage = "sunny cloudy.png";
+        } else if (weather.includes("rain")) {
+          bgImage = "images/rainy.jpg";
+        } else if (weather.includes("snow")) {
+          bgImage = "images/snow.jpg";
+        } else {
+          bgImage = "images/default.jpg";
+        }
+
+        document.body.style.backgroundImage = `url('${bgImage}')`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundRepeat = "no-repeat";
+        document.body.style.backgroundPosition = "center center";
+
+        const weatherCard = `
+          <div class="city">${data.name}</div>
+          <div class="temp">${Math.round(data.main.temp)}°C</div>
+          <div class="description">${data.weather[0].main}</div>
+          <div class="details">
+            <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
+            <p><strong>Wind Speed:</strong> ${data.wind.speed} m/s</p>
+            <p><strong>Pressure:</strong> ${data.main.pressure} hPa</p>
+          </div>
+        `;
+        document.getElementById('weather-card').innerHTML = weatherCard;
+        document.getElementById("weather-card").classList.add("animate");
+      })
+      .catch(error => {
+        document.getElementById('weather-card').innerHTML = `<p style="color:red;">${error.message}</p>`;
+      });
+  }
+  </script>
+  
+
+  
+
   </body>
-  </html>
+</html>
+      
